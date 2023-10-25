@@ -1,0 +1,133 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+syntax = "proto3";
+
+package stackinsights.v3;
+
+option go_package = "demo.stackinsights.ai/repo/goapi/satellite/data/v1";
+
+import "language-agent/CLRMetric.proto";
+import "language-agent/JVMMetric.proto";
+import "language-agent/Meter.proto";
+import "language-agent/ConfigurationDiscoveryService.proto";
+import "management/Management.proto";
+import "profile/Profile.proto";
+import "service-mesh-probe/service-mesh.proto";
+import "event/Event.proto";
+import "common/Command.proto";
+import "ebpf/profiling/Process.proto";
+import "ebpf/profiling/Profile.proto";
+import "ebpf/profiling/Continuous.proto";
+
+import "envoy/service/metrics/v2/metrics_service.proto";
+import "envoy/service/metrics/v3/metrics_service.proto";
+
+import "opentelemetry/proto/collector/metrics/v1/metrics_service.proto";
+
+// SniffType declares the supported transfer data type.
+enum SniffType {
+  CLRMetricType = 0;
+  JVMMetricType = 1;
+  MeterType = 2;
+  TracingType = 3;
+  Logging = 4;
+  ManagementType = 5;
+  ProfileType = 6;
+  ServiceMeshType = 7;
+  EventType = 8;
+  ConfigurationDiscoveryServiceType = 9;
+  EnvoyALSV2Type = 10;
+  EnvoyALSV3Type = 11;
+  EnvoyMetricsV2Type = 12;
+  EnvoyMetricsV3Type = 13;
+  EBPFProcessType = 14;
+  EBPFProfilingType = 15;
+  OpenTelementryMetricsV1Type = 16;
+}
+
+// SniffData is the transfer unit in Satellite.
+message SniffData {
+
+  // The occur time.
+  int64 timestamp = 1;
+  // unique event name.
+  string name = 2;
+  // The data type.
+  SniffType type = 3;
+  // Whether to send to remote. It is used in sampling.
+  bool remote = 4;
+  // Additional meta-information.
+  map<string, string> meta = 5;
+
+  // Transfer data.
+  oneof data{
+    CLRMetricCollection clr = 6;
+    JVMMetricCollection jvm = 7;
+    MeterData meter = 8;
+    bytes segment = 9;
+    BatchLogList logList = 10;
+    InstanceProperties instance = 11;
+    ThreadSnapshot profile = 12;
+    ServiceMeshMetrics serviceMesh = 13;
+    Event event = 14;
+    InstancePingPkg instancePing = 15;
+    ProfileTaskCommandQuery profileTaskQuery = 16;
+    ProfileTaskFinishReport profileTaskFinish = 17;
+    Commands commands = 18;
+    ConfigurationSyncRequest configurationSyncRequest = 19;
+    EnvoyALSV2List envoyALSV2List = 20;
+    EnvoyALSV3List envoyALSV3List = 21;
+    EnvoyMetricsV2List envoyMetricsV2List = 22;
+    EnvoyMetricsV3List envoyMetricsV3List = 23;
+    MeterDataCollection meterCollection = 24;
+    EBPFProcessReportList eBPFProcessReportList = 25;
+    EBPFReportProcessDownstream eBPFReportProcessDownstream = 26;
+    EBPFProcessPingPkgList eBPFProcessPingPkgList = 27;
+    EBPFProfilingTaskQuery eBPFProfilingTaskQuery = 28;
+    EBPFProfilingDataList eBPFProfilingDataList = 29;
+    opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest openTelementryMetricsV1Request = 30;
+    bytes spanAttachedEvent = 31;
+    ContinuousProfilingPolicyQuery continuousProfilingPolicyQuery = 32;
+    ContinuousProfilingReport continuousProfilingReport = 33;
+  }
+}
+
+message BatchLogList {
+  repeated bytes logs = 1;
+}
+
+message EnvoyALSV2List {
+  repeated bytes messages = 1;
+}
+
+message EnvoyALSV3List {
+  repeated bytes messages = 1;
+}
+
+message EnvoyMetricsV2List {
+  repeated envoy.service.metrics.v2.StreamMetricsMessage messages = 1;
+}
+
+message EnvoyMetricsV3List {
+  repeated envoy.service.metrics.v3.StreamMetricsMessage messages = 1;
+}
+
+message EBPFProfilingDataList {
+  repeated EBPFProfilingData dataList = 1;
+}

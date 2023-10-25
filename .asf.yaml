@@ -1,0 +1,20 @@
+#
+# Copyright (c) 2019 Stackinsights to present
+# All rights reserved
+#
+
+github:
+  description: Apache StackInsights API in Golang.
+  homepage: https://stackinsights.apache.org/
+  labels:
+    - go
+    - api
+    - stackinsights
+  protected_branches:
+    main:
+      required_status_checks:
+        strict: true
+  enabled_merge_buttons:
+    squash:  true
+    merge:   false
+    rebase:  false

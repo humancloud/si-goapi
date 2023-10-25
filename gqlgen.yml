@@ -1,0 +1,20 @@
+#
+# Copyright (c) 2019 Stackinsights to present
+# All rights reserved
+#
+
+schema: temp/query-protocol/*.graphqls
+
+skip_validation: true
+
+exec:
+  filename: temp/ignored.go
+  package: query
+
+model:
+  filename: query/schema.go
+  package: query
+
+models:
+  Long:
+    model: github.com/99designs/gqlgen/graphql.Int64
